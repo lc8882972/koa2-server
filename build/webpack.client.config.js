@@ -1,15 +1,12 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
 const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
-  entry: './src/server-entry.js',
+  entry: './src/client-entry.js',
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: 'bundle.js',
-    library: 'entry',
-    libraryTarget: 'commonjs'
+    filename: 'bundle.client.js',
   },
   resolve: {
     alias: {
@@ -23,6 +20,8 @@ module.exports = {
     }]
   },
   plugins: [
-
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
   ]
 }
