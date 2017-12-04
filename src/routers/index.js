@@ -1,6 +1,6 @@
 import Hello from '@/views/hello'
 const routers = [{
-  path: '/hello',
+  path: '/',
   component: Hello,
   exact: true
 }]

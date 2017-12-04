@@ -5,16 +5,16 @@ const app = new Koa();
 
 const entry = require('./dist/bundle').entry.default
 
-app.use(async(ctx, next) => {
+app.use(async (ctx, next) => {
   const start = Date.now();
   await next();
   const ms = Date.now() - start;
   ctx.set('X-Response-Time', `${ms}ms`)
 })
 
-app.use(asset(__dirname + '/dist', {
-  extensions: ['html', 'js']
-}))
+// app.use(asset(__dirname + '/dist', {
+//   extensions: ['js']
+// }))
 
 function render(template) {
   return `<!DOCTYPE html>
@@ -36,9 +36,9 @@ function render(template) {
 }
 
 // add url-route:
-router.get('/api/hello/:name', async(ctx, next) => {
+router.get('/', async (ctx, next) => {
   var name = ctx.params.name;
-  let html = entry()
+  let html = entry(ctx.request.path)
   ctx.response.body = render(html)
 });
 

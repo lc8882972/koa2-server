@@ -1,16 +1,16 @@
 import React from 'react';
-// import createBrowserHistory from 'history/createBrowserHistory'
-import { Router, Switch, Route,match } from 'react-router'
+import createBrowserHistory from 'history/createBrowserHistory'
+import { Router, Switch, Route, match } from 'react-router'
 
-// const history = createBrowserHistory()
+const history = createBrowserHistory()
 import routers from '@/routers'
 
 // match()
 export default () => {
   return (
-    <Router>
+    <Router history={history}>
       <Switch>
-        {routers.map(route => <Route {...route} />)}
+        {routers.map(route => <Route key={route.path} {...route} />)}
       </Switch>
     </Router>)
 }

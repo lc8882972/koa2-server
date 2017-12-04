@@ -9,30 +9,10 @@
 </head>
 
 <body>
-  <div id="root"></div>
-  <script>
-    //定义数组和类数组对象
-    var arr = [1, 2, 3];
-    var obj = {
-      0: 1,
-      1: 2,
-      2: 3,
-      length: 3
-    };
-    //元素读写操作
-    console.log(arr[0], obj[0]) //1, 1
-    console.log(arr['length'], obj['length']) //1, 1
-    arr[0] = 9;
-    obj[0] = 9;
 
-    //遍历
-    for (var i = 0, len = arr.length; i < len; i++) {
-      console.log(arr[i])
-    }
-    for (var i = 0, len = obj.length; i < len; i++) {
-      console.log(obj[i])
-    }
-  </script>
+  <div id="root">
+    <!--server side render-->
+  </div>
 </body>
 
 </html>
