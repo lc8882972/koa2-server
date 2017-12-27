@@ -1,16 +1,18 @@
 // const React = require('react')
 import React from 'react'
+import webgl from '../webgl/cube'
 
 class Hello extends React.Component {
   constructor(props) {
     super(props)
   }
-  clickHandle() {
-    console.log('from web client')
+
+  componentDidMount() {
+    webgl(this.refs.canvas)
   }
 
   render() {
-    return <h1 onClick={this.clickHandle}>Hello, world!</h1>
+    return (<div ref="canvas"></div>)
   }
 }
 

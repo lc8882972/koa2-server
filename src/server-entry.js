@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { StaticRouter, Switch, Route, match } from 'react-router'
-// import App from './app'
 import routers from '@/routers'
 
 const context = {}
