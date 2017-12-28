@@ -5,7 +5,6 @@ import { Router, Switch, Route, match } from 'react-router'
 const history = createBrowserHistory()
 import routers from '@/routers'
 
-// match()
 export default () => {
   return (
     <Router history={history}>

@@ -1,12 +1,16 @@
 const path = require('path')
+const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals')
 
 const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
-  target: 'node',
-  entry: { 
-    app: './src/server-entry.js' 
+  entry: {
+    app: './src/server-entry.js',
+    vendor: [
+      'react',
+      'react-router'
+    ]
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
@@ -32,6 +36,8 @@ module.exports = {
     }]
   },
   plugins: [
-
+    new webpack.DefinePlugin({
+      '_SERVER_': JSON.stringify(true)
+    })
   ]
 }
