@@ -7,26 +7,27 @@ const clientConfig = require('./webpack.client.config')
 const serverConfig = require('./webpack.server.config')
 
 module.exports = function setupDevServer(app, opts) {
-  // dev middleware
+
   const clientCompiler = webpack(clientConfig)
-  const devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
-    stats: {
-      colors: true,
-      chunks: false
-    }
-  })
-  app.use(devMiddleware)
   clientCompiler.plugin('done', () => {
     const fs = devMiddleware.fileSystem
     const filePath = path.join(clientConfig.output.path, 'index.html')
     if (fs.existsSync(filePath)) {
-      const index = fs.readFileSync(filePath, 'utf-8')
-      opts.indexUpdated(index)
+      const fileStream = fs.readFileSync(filePath, 'utf-8')
+      opts.htmlUpdated(fileStream)
     }
   })
 
+  // dev middleware
+  app.use(devMiddleware(clientCompiler, {
+    stats: {
+      colors: true,
+      chunks: false
+    }
+  }))
+
   // hot middleware
-  app.use(require('webpack-hot-middleware')(clientCompiler))
+  app.use(hotMiddleware(clientCompiler))
 
   // watch and update server renderer
   const serverCompiler = webpack(serverConfig)
@@ -38,6 +39,7 @@ module.exports = function setupDevServer(app, opts) {
     stats = stats.toJson()
     stats.errors.forEach(err => console.error(err))
     stats.warnings.forEach(err => console.warn(err))
+
     opts.bundleUpdated(mfs.readFileSync(outputPath, 'utf-8'))
   })
 }

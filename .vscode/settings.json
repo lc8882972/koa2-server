@@ -2,6 +2,6 @@
   "git.ignoreLimitWarning": true,
   "editor.tabSize": 2,
   "files.associations": {
-    "*.js": "javascriptreact"
+    "*.jsx": "javascriptreact"
   }
 }
