@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import 'three/examples/js/controls/OrbitControls'
+import './DragControl'
 
 export default (dom) => {
   let camera, scene, renderer, orbitControl;
@@ -40,7 +41,7 @@ export default (dom) => {
     ];
     let material = new THREE.MeshFaceMaterial(materialArray);
     mesh = new THREE.Mesh(geometry, material);
-    
+
     let box3 = new THREE.Box3();
     box3.setFromObject(mesh);
     mesh.userData.box = box3;
@@ -113,9 +114,24 @@ export default (dom) => {
     //     materialIndex: 5
     //   }
     // ]
-    console.log(eg);
+
     egm = new THREE.Mesh(eg, material);
     egm.position.x = -250;
+
+    let matrix4 = new THREE.Matrix4().copy(egm.matrix);
+    let quat = new THREE.Quaternion();
+    let euler = new THREE.Euler();
+    // euler.z = Math.PI / 2;
+
+    // quat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+    quat.setFromEuler(euler);
+    // quat.setFromRotationMatrix(egm.matrix);
+    // quat.x = Math.PI / 2
+    console.log(quat);
+    matrix4.setRotationFromQuaternion(quat);
+    // matrix4.makeRotationX(Math.PI / 2);
+    // matrix4.setPosition(egm.position);
+    egm.applyMatrix(matrix4);
     scene.add(egm);
 
     //立方体顶点位置坐标
@@ -142,6 +158,11 @@ export default (dom) => {
     // egm = new THREE.Mesh(box, material);
     // egm.position.x = -250;
     // scene.add(egm);
+    let objects = [mesh, mesh2, egm];
+    let dragControls = new THREE.DragControls(objects, camera, dom);
+    dragControls.addEventListener('dragstart', function (event) { orbitControl.enabled = false; });
+    dragControls.addEventListener('dragend', function (event) { orbitControl.enabled = true; });
+
     renderer = new THREE.WebGLRenderer();
     renderer.setClearColor(0xffffff)
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -165,7 +186,7 @@ export default (dom) => {
 
   function animate() {
     requestAnimationFrame(animate);
-    
+
     // mesh.rotation.x += 0.005;
     // mesh.rotation.y += 0.05;
     // mesh.rotation.z += 0.05;
@@ -191,8 +212,8 @@ export default (dom) => {
     let vector3 = new THREE.Vector3()
     raycaster.setFromCamera(point, camera);
     raycaster.ray.intersectBox(mesh.userData.box, vector3);
-    console.log(vector3)
   }
+
   init(dom);
   animate();
 }

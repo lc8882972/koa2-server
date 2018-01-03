@@ -26,7 +26,7 @@ app.use(devMiddleware(compile, {
 }))
 app.use(hotMiddleware(compile, {
   // log: console.log, 
-  // path: '/__webpack_hmr', 
+  path: '/__webpack_hmr',
   // heartbeat: 10 * 1000 
 }))
 

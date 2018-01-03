@@ -5,7 +5,11 @@ const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
   entry: {
-    app: ['react-hot-loader/patch', './src/client-entry.jsx'],
+    app: [
+      'react-hot-loader/patch',
+      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&overlay=false',
+      './src/client-entry.jsx'
+    ],
     vendor: [
       'react',
       'react-router'
