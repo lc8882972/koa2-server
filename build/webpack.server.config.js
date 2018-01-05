@@ -5,6 +5,7 @@ const nodeExternals = require('webpack-node-externals')
 const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
+  target: 'node',
   entry: {
     app: './src/server-entry.js',
     vendor: [
@@ -13,7 +14,7 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     library: 'entry',
     libraryTarget: 'commonjs'

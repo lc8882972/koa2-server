@@ -3,5 +3,6 @@
   "editor.tabSize": 2,
   "files.associations": {
     "*.js": "javascriptreact"
-  }
+  },
+  "eslint.enable": true
 }

@@ -1,37 +1,70 @@
 const path = require('path')
-const nodeExternals = require('webpack-node-externals')
-
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
-  target: 'node',
-  entry: { 
-    app: './src/server-entry.js' 
+  entry: {
+    app: ['react-hot-loader/patch', './src/client-entry.js'],
+    vendor: [
+      'react',
+      'react-router'
+    ]
   },
   output: {
-    path: path.resolve(__dirname, '../dist'),
-    filename: 'bundle.js',
-    library: 'entry',
-    libraryTarget: 'commonjs'
+    path: path.resolve(ROOT_DIR, 'dist'),
+    filename: '[name].js'
   },
+  devtool: 'cheap-module-eval-source-map',
   resolve: {
     alias: {
       '@': path.resolve(ROOT_DIR, 'src')
-    }
+    },
+    extensions: ['', '.js'],
+    modules: [path.resolve(ROOT_DIR, 'src'), 'node_modules']
   },
-  // https://webpack.js.org/configuration/externals/#externals
-  // https://github.com/liady/webpack-node-externals
-  externals: nodeExternals({
-    // do not externalize CSS files in case we need to import it from a dep
-    whitelist: /\.css$/
-  }),
   module: {
     rules: [{
       test: /\.js$/,
-      use: 'babel-loader'
+      use: 'babel-loader',
+      include: [
+        path.resolve(__dirname, 'src')
+      ],
+      // exclude: [
+      //   path.resolve(__dirname, 'app/demo-files')
+      // ],
     }]
   },
   plugins: [
-
+    new webpack.DefinePlugin({
+      '_CLIENT_': JSON.stringify(true)
+    }),
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    }),
+    // split vendor js into its own file
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: function (module, count) {
+        // any required modules inside node_modules are extracted to vendor
+        return (
+          module.resource &&
+          /\.js$/.test(module.resource) &&
+          module.resource.indexOf(
+            path.join(__dirname, '../node_modules')
+          ) === 0
+        )
+      }
+    }),
+    // extract webpack runtime and module manifest to its own file in order to
+    // prevent vendor hash from being updated whenever app bundle is updated
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'runtime',
+      chunks: ['vendor']
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }

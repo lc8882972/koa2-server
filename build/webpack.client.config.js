@@ -19,12 +19,20 @@ module.exports = {
   resolve: {
     alias: {
       '@': path.resolve(ROOT_DIR, 'src')
-    }
+    },
+    extensions: ['', '.js'],
+    modules: [path.resolve(ROOT_DIR, 'src'), 'node_modules']
   },
   module: {
     rules: [{
       test: /\.js$/,
-      use: 'babel-loader'
+      use: 'babel-loader',
+      include: [
+        path.resolve(__dirname, 'src')
+      ],
+      // exclude: [
+      //   path.resolve(__dirname, 'app/demo-files')
+      // ],
     }]
   },
   plugins: [
@@ -57,7 +65,6 @@ module.exports = {
       chunks: ['vendor']
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }
