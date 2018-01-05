@@ -5,10 +5,14 @@ const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
   entry: {
-    app: ['react-hot-loader/patch', './src/client-entry.js'],
+    app: [
+      'react-hot-loader/patch',
+      './src/client-entry.jsx'
+    ],
     vendor: [
       'react',
-      'react-router'
+      'react-router',
+      'three'
     ]
   },
   output: {
@@ -20,19 +24,12 @@ module.exports = {
     alias: {
       '@': path.resolve(ROOT_DIR, 'src')
     },
-    extensions: ['', '.js'],
-    modules: [path.resolve(ROOT_DIR, 'src'), 'node_modules']
+    extensions: [".js", ".jsx"]
   },
   module: {
     rules: [{
-      test: /\.js$/,
-      use: 'babel-loader',
-      include: [
-        path.resolve(__dirname, 'src')
-      ],
-      // exclude: [
-      //   path.resolve(__dirname, 'app/demo-files')
-      // ],
+      test: /\.(js|jsx)$/,
+      use: 'babel-loader'
     }]
   },
   plugins: [
@@ -65,6 +62,10 @@ module.exports = {
       chunks: ['vendor']
     }),
     new webpack.HotModuleReplacementPlugin(),
+<<<<<<< HEAD
     new webpack.NoEmitOnErrorsPlugin()
+=======
+    new webpack.NoEmitOnErrorsPlugin(),
+>>>>>>> 8b5b7da96c11392c967083f10b6a6368f8036136
   ]
 }

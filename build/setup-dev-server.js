@@ -9,13 +9,12 @@ const serverConfig = require('./webpack.server.config')
 module.exports = function setupDevServer(app, opts) {
 
   const clientCompiler = webpack(clientConfig)
-
   clientCompiler.plugin('done', () => {
     const fs = devMiddleware.fileSystem
     const filePath = path.join(clientConfig.output.path, 'index.html')
     if (fs.existsSync(filePath)) {
-      const index = fs.readFileSync(filePath, 'utf-8')
-      opts.indexUpdated(index)
+      const fileStream = fs.readFileSync(filePath, 'utf-8')
+      opts.htmlUpdated(fileStream)
     }
   })
   // dev middleware
@@ -38,6 +37,7 @@ module.exports = function setupDevServer(app, opts) {
     stats = stats.toJson()
     stats.errors.forEach(err => console.error(err))
     stats.warnings.forEach(err => console.warn(err))
+
     opts.bundleUpdated(mfs.readFileSync(outputPath, 'utf-8'))
   })
 }

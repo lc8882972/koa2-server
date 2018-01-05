@@ -5,7 +5,11 @@ const ROOT_DIR = path.resolve(__dirname, '../')
 
 module.exports = {
   entry: {
-    app: ['react-hot-loader/patch', './src/client-entry.js'],
+    app: [
+      'react-hot-loader/patch',
+      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&overlay=false',
+      './src/client-entry.jsx'
+    ],
     vendor: [
       'react',
       'react-router'
@@ -13,26 +17,20 @@ module.exports = {
   },
   output: {
     path: path.resolve(ROOT_DIR, 'dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    chunkFilename: '[id].js'
   },
   devtool: 'cheap-module-eval-source-map',
   resolve: {
     alias: {
       '@': path.resolve(ROOT_DIR, 'src')
     },
-    extensions: ['', '.js'],
-    modules: [path.resolve(ROOT_DIR, 'src'), 'node_modules']
+    extensions: ['.js', '.jsx']
   },
   module: {
     rules: [{
-      test: /\.js$/,
-      use: 'babel-loader',
-      include: [
-        path.resolve(__dirname, 'src')
-      ],
-      // exclude: [
-      //   path.resolve(__dirname, 'app/demo-files')
-      // ],
+      test: /\.(js|jsx)$/,
+      use: 'babel-loader'
     }]
   },
   plugins: [

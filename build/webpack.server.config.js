@@ -7,14 +7,10 @@ const ROOT_DIR = path.resolve(__dirname, '../')
 module.exports = {
   target: 'node',
   entry: {
-    app: './src/server-entry.js',
-    vendor: [
-      'react',
-      'react-router'
-    ]
+    app: './src/server-entry.jsx'
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(ROOT_DIR, 'dist'),
     filename: 'bundle.js',
     library: 'entry',
     libraryTarget: 'commonjs'
@@ -22,7 +18,8 @@ module.exports = {
   resolve: {
     alias: {
       '@': path.resolve(ROOT_DIR, 'src')
-    }
+    },
+    extensions: [".js", ".jsx"]
   },
   // https://webpack.js.org/configuration/externals/#externals
   // https://github.com/liady/webpack-node-externals
