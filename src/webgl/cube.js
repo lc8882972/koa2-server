@@ -1,18 +1,37 @@
 import * as THREE from 'three';
 import 'three/examples/js/controls/OrbitControls'
 import './DragControl'
+import './MTLLoader'
+// import './OBJLoader'
 
 export default (dom) => {
   let camera, scene, renderer, orbitControl;
   let mesh, mesh2, egm;
   let raycaster;
+  let myWorker;
+  let mtlLoader = new THREE.MTLLoader();
+  let sofaMaterial;
 
   function init(canvas) {
+
+    if (window.Worker) {
+      myWorker = new Worker('worker.js');
+    }
+
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.z = 400;
     camera.lookAt(new THREE.Vector3(0, 0, 0))
     scene = new THREE.Scene();
-    scene.add(new THREE.AmbientLight(0xfffff))
+    scene.add(new THREE.AmbientLight(0xfffff));
+    // const ambientLight = new THREE.AmbientLight(0xfffff);
+    // ambientLight.position.set(400, 1000, 800);
+    // scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xf0f0f0);
+    directionalLight.position.set(400, 1000, 800);
+    scene.add(directionalLight);
+
+
     raycaster = new THREE.Raycaster();
     // raycaster.setFromCamera(camera);
     orbitControl = new THREE.OrbitControls(camera, dom);
@@ -39,14 +58,13 @@ export default (dom) => {
         color: 0xff0000
       }),
     ];
-    let material = new THREE.MeshFaceMaterial(materialArray);
-    mesh = new THREE.Mesh(geometry, material);
+
+    mesh = new THREE.Mesh(geometry, materialArray);
 
     let box3 = new THREE.Box3();
     box3.setFromObject(mesh);
     mesh.userData.box = box3;
     scene.add(mesh);
-    console.log(mesh);
 
     let geometry2 = new THREE.BoxGeometry(200, 200, 200);
     let material2 = new THREE.MeshBasicMaterial({
@@ -83,6 +101,27 @@ export default (dom) => {
     eg.faces[9].materialIndex = 4;
     eg.faces[10].materialIndex = 5;
     eg.faces[11].materialIndex = 5;
+
+    const objectLoader = new THREE.ObjectLoader();
+
+    // myWorker.onmessage = function (e) {
+    //   let group = objectLoader.parse(e.data);
+    //   console.log(sofaMaterial);
+    //   group.children[0].material = sofaMaterial.materials.Material;
+    //   scene.add(group);
+    // }
+
+    // mtlLoader.load('sofa/M002700S10102021900C_H.mtl', (material) => {
+
+    //   material.preload();
+    //   sofaMaterial = material;
+    //   myWorker.postMessage({ type: 'BoxBufferGeometry' });
+
+    // })
+    // myWorker.postMessage({ type: 'BoxBufferGeometry' });
+
+
+
     // eg.groups = [{
     //     start: 0,
     //     count: 6,
@@ -115,7 +154,7 @@ export default (dom) => {
     //   }
     // ]
 
-    egm = new THREE.Mesh(eg, material);
+    egm = new THREE.Mesh(eg, materialArray);
     egm.position.x = -250;
 
     let matrix4 = new THREE.Matrix4().copy(egm.matrix);
@@ -127,8 +166,8 @@ export default (dom) => {
     quat.setFromEuler(euler);
     // quat.setFromRotationMatrix(egm.matrix);
     // quat.x = Math.PI / 2
-    console.log(quat);
-    matrix4.setRotationFromQuaternion(quat);
+
+    matrix4.makeRotationFromQuaternion(quat);
     // matrix4.makeRotationX(Math.PI / 2);
     // matrix4.setPosition(egm.position);
     egm.applyMatrix(matrix4);
@@ -154,9 +193,7 @@ export default (dom) => {
     //   2, 3, 7, 7, 6, 2,
     //   4, 5, 6, 6, 7, 4
     // ];
-    // var box = new THREE.PolyhedronBufferGeometry(vertices, indices, 100);
-    // egm = new THREE.Mesh(box, material);
-    // egm.position.x = -250;
+
     // scene.add(egm);
     let objects = [mesh, mesh2, egm];
     let dragControls = new THREE.DragControls(objects, camera, dom);

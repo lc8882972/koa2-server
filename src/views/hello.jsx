@@ -1,6 +1,6 @@
 // const React = require('react')
 import React from 'react'
-import webgl from '../webgl/cube'
+import webgl from '../webgl/control'
 
 class Hello extends React.Component {
   constructor(props) {

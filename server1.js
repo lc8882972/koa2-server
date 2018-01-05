@@ -9,6 +9,7 @@ const router = require('koa-router')()
 const compile = webpack(devConfig)
 
 const app = new Koa();
+app.use(asset('./public'));
 app.use(devMiddleware(compile, {
   // display no info to console (only warnings and errors) 
   noInfo: false,
@@ -27,7 +28,6 @@ app.use(devMiddleware(compile, {
 app.use(hotMiddleware(compile, {
   // log: console.log, 
   path: '/__webpack_hmr',
-  // heartbeat: 10 * 1000 
 }))
 
 app.use(async (ctx, next) => {
