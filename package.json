@@ -15,7 +15,11 @@
     "koa": "^2.4.1",
     "koa-router": "^7.3.0",
     "koa-static": "^4.0.2",
+<<<<<<< HEAD
     "numeric": "^1.2.6",
+=======
+    "mobx": "^3.4.1",
+>>>>>>> f9172444b53f87cd4ecaa7d5943f63c3442992a5
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-router": "^4.2.0",
