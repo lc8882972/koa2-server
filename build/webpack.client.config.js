@@ -63,7 +63,6 @@ module.exports = {
       chunks: ['vendor']
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }

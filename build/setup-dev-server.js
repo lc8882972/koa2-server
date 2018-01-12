@@ -17,7 +17,6 @@ module.exports = function setupDevServer(app, opts) {
       opts.htmlUpdated(fileStream)
     }
   })
-
   // dev middleware
   app.use(devMiddleware(clientCompiler, {
     stats: {
@@ -25,7 +24,6 @@ module.exports = function setupDevServer(app, opts) {
       chunks: false
     }
   }))
-
   // hot middleware
   app.use(hotMiddleware(clientCompiler))
 
