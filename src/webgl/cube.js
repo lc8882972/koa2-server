@@ -23,9 +23,9 @@ export default (dom) => {
     camera.lookAt(new THREE.Vector3(0, 0, 0))
     scene = new THREE.Scene();
     scene.add(new THREE.AmbientLight(0xfffff));
-    // const ambientLight = new THREE.AmbientLight(0xfffff);
-    // ambientLight.position.set(400, 1000, 800);
-    // scene.add(ambientLight);
+    const ambientLight = new THREE.AmbientLight(0xfffff);
+    ambientLight.position.set(400, 1000, 800);
+    scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xf0f0f0);
     directionalLight.position.set(400, 1000, 800);
@@ -36,7 +36,6 @@ export default (dom) => {
     // raycaster.setFromCamera(camera);
     orbitControl = new THREE.OrbitControls(camera, dom);
     let geometry = new THREE.BoxBufferGeometry(200, 200, 200);
-    // geometry.fromGeometry()
 
     let materialArray = [
       new THREE.MeshBasicMaterial({
@@ -157,7 +156,7 @@ export default (dom) => {
     egm = new THREE.Mesh(eg, materialArray);
     egm.position.x = -250;
 
-    let matrix4 = new THREE.Matrix4().copy(egm.matrix);
+    let matrix4 = new THREE.Matrix4();
     let quat = new THREE.Quaternion();
     let euler = new THREE.Euler();
     // euler.z = Math.PI / 2;
@@ -233,6 +232,8 @@ export default (dom) => {
     // egm.rotation.z += 0.05;
 
     // let result = mesh.userData.box.intersectsBox(mesh2.userData.box);
+
+    // console.log(result);
     // let x = Math.random() * 1000;
     // console.log(result);
     // mesh2.position.x = x;

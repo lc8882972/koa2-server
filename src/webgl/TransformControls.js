@@ -20,8 +20,8 @@ const TransformControls = function (camera, controls, domElement) {
 
   var scope = this;
 
-  var _dragging = false;
-  var _gizmo = null;
+  var dragging = false;
+  var gizmo = null;
 
 
   var changeEvent = { type: "change" };
@@ -105,9 +105,8 @@ const TransformControls = function (camera, controls, domElement) {
 
   this.attach = function (object) {
 
-    _gizmo = new TransformGizmoTranslate(object);
+    gizmo = new TransformGizmoTranslate(object);
     this.object = object;
-    this.update();
 
   };
 
@@ -116,7 +115,7 @@ const TransformControls = function (camera, controls, domElement) {
     this.object = null;
     this.visible = false;
     this.axis = null;
-    _gizmo = null;
+    gizmo = null;
 
   };
 
@@ -146,13 +145,13 @@ const TransformControls = function (camera, controls, domElement) {
 
     }
 
-    _gizmo.update(new THREE.Euler(), eye);
+    gizmo.update(new THREE.Euler(), eye);
 
   };
 
   function onPointerHover(event) {
 
-    if (scope.object === null || _dragging === true || (event.button !== undefined && event.button !== 0)) return;
+    if (scope.object === null || dragging === true || (event.button !== undefined && event.button !== 0)) return;
 
     var pointer = event.changedTouches ? event.changedTouches[0] : event;
     let objects = scope.shapeArray;
@@ -197,7 +196,7 @@ const TransformControls = function (camera, controls, domElement) {
       return;
     }
 
-    if (_dragging === true) {
+    if (dragging === true) {
       return;
     }
 
@@ -215,7 +214,7 @@ const TransformControls = function (camera, controls, domElement) {
 
         scope.dispatchEvent(mouseDownEvent);
 
-        _gizmo.init(scope.object);
+        gizmo.activate(scope.object.parent);
 
         scope.axis = intersect.object.name;
 
@@ -223,9 +222,9 @@ const TransformControls = function (camera, controls, domElement) {
 
         eye.copy(camPosition).sub(worldPosition).normalize();
 
-        _gizmo.setActivePlane(scope.axis, eye);
+        gizmo.setActivePlane(scope.axis, eye);
 
-        var planeIntersect = intersectObjects(pointer, [_gizmo.activePlane]);
+        var planeIntersect = intersectObjects(pointer, [gizmo.activePlane]);
 
         if (planeIntersect) {
 
@@ -239,7 +238,7 @@ const TransformControls = function (camera, controls, domElement) {
           parentScale.setFromMatrixScale(tempMatrix.getInverse(scope.object.parent.matrixWorld));
 
           offset.copy(planeIntersect.point);
-          _dragging = true;
+          dragging = true;
           controls.enabled = false;
         }
 
@@ -254,11 +253,11 @@ const TransformControls = function (camera, controls, domElement) {
 
   function onPointerMove(event) {
 
-    if (scope.object === null || scope.axis === null || _dragging === false || (event.button !== undefined && event.button !== 0)) return;
+    if (scope.object === null || scope.axis === null || dragging === false || (event.button !== undefined && event.button !== 0)) return;
 
     var pointer = event.changedTouches ? event.changedTouches[0] : event;
 
-    var planeIntersect = intersectObjects(pointer, [_gizmo.activePlane]);
+    var planeIntersect = intersectObjects(pointer, [gizmo.activePlane]);
 
     if (planeIntersect === false) return;
 
@@ -267,11 +266,10 @@ const TransformControls = function (camera, controls, domElement) {
     event.stopPropagation();
 
     point.copy(planeIntersect.point);
-    console.log(planeIntersect.object.name);
 
     point.sub(offset);
     point.multiply(parentScale);
- 
+
     if (scope.axis.search("X") === - 1) point.x = 0;
     if (scope.axis.search("Y") === - 1) point.y = 0;
     if (scope.axis.search("Z") === - 1) point.z = 0;
@@ -283,22 +281,22 @@ const TransformControls = function (camera, controls, domElement) {
     scope.object.position.round();
 
 
-    // if (scope.axis.search("R") !== -1) {
-    //   let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-    //   let movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-    //   let dis = Math.abs(movementX) > Math.abs(movementY) ? movementX : movementY;
+    if (scope.axis.search("R") !== -1) {
+      let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+      let movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+      let dis = Math.abs(movementX) > Math.abs(movementY) ? movementX : movementY;
 
-    //   let rect = domElement.getBoundingClientRect();
-    //   let x = (pointer.clientX - rect.left) / rect.width;
-    //   let y = (pointer.clientY - rect.top) / rect.height;
+      let rect = domElement.getBoundingClientRect();
+      let x = (pointer.clientX - rect.left) / rect.width;
+      let y = (pointer.clientY - rect.top) / rect.height;
 
-    //   let m = new THREE.Vector2(x, y);
-    //   let rotationY = dis * 0.002;
+      let m = new THREE.Vector2(x, y);
+      let rotationY = dis * 0.002;
 
-    //   scope.object.children[0].rotation.y += rotationY;
-    //   scope.object.children[1].rotation.y += rotationY;
-    //   scope.object.children[2].getObjectByName('circleGroup').rotation.y += rotationY;
-    // }
+      scope.object.children[0].rotation.y += rotationY;
+      scope.object.children[1].rotation.y += rotationY;
+      scope.object.children[2].getObjectByName('circleGroup').rotation.y += rotationY;
+    }
 
     scope.update();
     scope.dispatchEvent(changeEvent);
@@ -316,10 +314,10 @@ const TransformControls = function (camera, controls, domElement) {
       controls.enabled = true;
     }
 
-    if (_dragging && (scope.axis !== null)) {
+    if (dragging && (scope.axis !== null)) {
       scope.dispatchEvent(mouseUpEvent);
-      _gizmo.destory();
-      _dragging = false;
+      gizmo.destory();
+      dragging = false;
     }
 
     if ('TouchEvent' in window && event instanceof TouchEvent) {

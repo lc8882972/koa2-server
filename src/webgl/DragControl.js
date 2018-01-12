@@ -7,13 +7,7 @@ const THREE = require('three');
 
 THREE.DragControls = function (_objects, _camera, _domElement) {
 
-  if (_objects instanceof THREE.Camera) {
-
-    console.warn('THREE.DragControls: Constructor now expects ( objects, camera, domElement )');
-    var temp = _objects; _objects = _camera; _camera = temp;
-
-  }
-
+  var _collisions = _objects;
   var _plane = new THREE.Plane();
   var _raycaster = new THREE.Raycaster();
 
@@ -61,18 +55,42 @@ THREE.DragControls = function (_objects, _camera, _domElement) {
 
     event.preventDefault();
 
-    var rect = _domElement.getBoundingClientRect();
-
+    let rect = _domElement.getBoundingClientRect();
+    let isCollision = false;
     _mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     _mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
 
     _raycaster.setFromCamera(_mouse, _camera);
+    let oldPosition = new THREE.Vector3();
 
     if (_selected && scope.enabled) {
 
       if (_raycaster.ray.intersectPlane(_plane, _intersection)) {
 
+        oldPosition.copy(_selected.position);
         _selected.position.copy(_intersection.sub(_offset));
+        _selected.userData.box.setFromObject(_selected);
+
+        for (let i = 0; i < _collisions.length; i++) {
+
+          if (_collisions[i] === _selected) continue;
+
+          if (_selected.userData.box.intersectsBox(_collisions[i].userData.box)) {
+            isCollision = true;
+            console.log(_selected.userData.box.max);
+            break;
+          }
+        }
+
+
+        if (isCollision) {
+          // console.log('发生碰撞');
+          // console.log(_selected.userData.box);
+          _selected.position.copy(oldPosition);
+          _selected.userData.box.setFromObject(_selected);
+
+
+        }
       }
 
       scope.dispatchEvent({ type: 'drag', object: _selected });
@@ -88,6 +106,14 @@ THREE.DragControls = function (_objects, _camera, _domElement) {
     if (intersects.length > 0) {
 
       var object = intersects[0].object;
+
+      let matrix4 = new THREE.Matrix4();
+      let quat = new THREE.Quaternion();
+      let euler = new THREE.Euler();
+
+      quat.setFromEuler(euler);
+
+      matrix4.makeRotationFromQuaternion(quat);
 
       _plane.setFromNormalAndCoplanarPoint(_camera.getWorldDirection(_plane.normal), object.position);
 
@@ -203,8 +229,16 @@ THREE.DragControls = function (_objects, _camera, _domElement) {
     if (intersects.length > 0) {
 
       _selected = intersects[0].object;
+      let matrix4 = new THREE.Matrix4();
+      let quat = new THREE.Quaternion();
+      let euler = new THREE.Euler();
+
+      quat.setFromEuler(euler);
+
+      matrix4.makeRotationFromQuaternion(quat);
 
       _plane.setFromNormalAndCoplanarPoint(_camera.getWorldDirection(_plane.normal), _selected.position);
+      _plane.applyMatrix4(matrix4);
 
       if (_raycaster.ray.intersectPlane(_plane, _intersection)) {
 

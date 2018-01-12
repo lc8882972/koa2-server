@@ -5,42 +5,26 @@ const TransformGizmo = function () {
 
   THREE.Object3D.call(this);
   const scope = this;
-  this.wapper = null;
+  this.planes = {};
 
-  this.init = function (model) {
-    this.wapper = model.parent;
-    this.planes = new THREE.Object3D();
-    this.planes.name = '_plane_group';
+  this.init = function () {
+
+    this.name = 'TransformGizmo';
+
     //// PLANES
 
     const planeGeometry = new THREE.PlaneBufferGeometry(3400, 3400, 2, 2);
-    const planeMaterialX = new THREE.MeshBasicMaterial({
+    const planeMaterial = new THREE.MeshBasicMaterial({
       visible: false,
       side: THREE.DoubleSide,
       color: 0xff0000
     });
-    const planeMaterialY = new THREE.MeshBasicMaterial({
-      visible: false,
-      side: THREE.DoubleSide,
-      color: 0xffff00
-    });
-    const planeMaterialZ = new THREE.MeshBasicMaterial({
-      visible: false,
-      side: THREE.DoubleSide,
-      color: 0xff00ff
-    });
-
-    const planeMaterialXYZ = new THREE.MeshBasicMaterial({
-      visible: false,
-      side: THREE.DoubleSide,
-      color: 0x00ffff
-    });
 
     const planes = {
-      "XY": new THREE.Mesh(planeGeometry, planeMaterialX),
-      "YZ": new THREE.Mesh(planeGeometry, planeMaterialY),
-      "XZ": new THREE.Mesh(planeGeometry, planeMaterialZ),
-      "XYZE": new THREE.Mesh(planeGeometry, planeMaterialXYZ)
+      "XY": new THREE.Mesh(planeGeometry, planeMaterial),
+      "YZ": new THREE.Mesh(planeGeometry, planeMaterial),
+      "XZ": new THREE.Mesh(planeGeometry, planeMaterial),
+      "XYZE": new THREE.Mesh(planeGeometry, planeMaterial)
     };
 
     this.activePlane = planes["XYZE"];
@@ -51,39 +35,47 @@ const TransformGizmo = function () {
     for (let i in planes) {
 
       planes[i].name = i;
-      this.planes.add(planes[i]);
+      this.add(planes[i]);
       this.planes[i] = planes[i];
 
     }
 
-    this.wapper.add(this.planes);
-
     // reset Transformations
-    // this.traverse(function (child) {
+    this.traverse(function (child) {
 
-    //     if (child instanceof THREE.Mesh) {
+      if (child instanceof THREE.Mesh) {
 
-    //         child.updateMatrix();
+        child.updateMatrix();
 
-    //         let tempGeometry = child.geometry.clone();
-    //         tempGeometry.applyMatrix(child.matrix);
-    //         child.geometry = tempGeometry;
+        let tempGeometry = child.geometry.clone();
+        tempGeometry.applyMatrix(child.matrix);
+        child.geometry = tempGeometry;
 
-    //         child.position.set(0, 0, 0);
-    //         child.rotation.set(0, 0, 0);
-    //         child.scale.set(1, 1, 1);
+        child.position.set(0, 0, 0);
+        child.rotation.set(0, 0, 0);
+        child.scale.set(1, 1, 1);
 
-    //     }
+      }
 
-    // });
+    });
 
   };
 
   this.destory = function () {
-    if (this.wapper !== null && this.planes !== null) {
-      this.wapper.children.splice(1, this.wapper.children.length - 1);
+    if (this.parent) {
+      this.parent.remove(this);
     }
   };
+
+  this.activate = function (model) {
+    model.add(this);
+  }
+
+  this.deactivate = function (model) {
+    if (this.parent) {
+      this.parent.remove(this);
+    }
+  }
 };
 
 TransformGizmo.prototype = Object.create(THREE.Object3D.prototype);
@@ -91,27 +83,20 @@ TransformGizmo.prototype.constructor = TransformGizmo;
 
 TransformGizmo.prototype.update = function (rotation, eye) {
 
-  let vec1 = new THREE.Vector3(0, 0, 0);
-  let vec2 = new THREE.Vector3(0, 1, 0);
-  let lookAtMatrix = new THREE.Matrix4();
-
   this.traverse(function (child) {
 
-    if (!child.planes) return;
-    child.planes.children.forEach(plane => {
+    if (child.name.search("X") !== -1 || child.name.search("Y") !== -1 || child.name.search("Z") !== -1) {
 
-      if (plane.name.search("X") !== -1 || plane.name.search("Y") !== -1 || plane.name.search("Z") !== -1) {
-
-        plane.quaternion.setFromEuler(rotation);
-      }
-    });
-
+      child.quaternion.setFromEuler(rotation);
+    }
   });
+
 };
 
 const TransformGizmoTranslate = function (model) {
 
   TransformGizmo.call(this);
+  this.init();
 
   this.setActivePlane = function (axis, eye) {
 

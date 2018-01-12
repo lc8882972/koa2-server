@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import 'three/examples/js/controls/OrbitControls'
+import './Orbit3DControls';
 import { ModelObject3D } from './ModleObject'
 import { TransformControls } from './TransformControls'
 // import './MTLLoader'
@@ -27,8 +27,15 @@ export default (dom) => {
     const directionalLight = new THREE.DirectionalLight(0xf0f0f0);
     directionalLight.position.set(400, 1000, 800);
     scene.add(directionalLight);
-    orbitControl = new THREE.OrbitControls(camera, dom);
+    orbitControl = new THREE.Orbit3DControls(camera, dom);
 
+    let v1, v2;
+
+    v1 = new THREE.Vector3(1, 0, 0);
+    v2 = new THREE.Vector3(0, 1, 0);
+
+
+    console.log(v1.angleTo(v2));
     let obj = load();
 
     scene.add(obj);
@@ -40,7 +47,7 @@ export default (dom) => {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     dom.appendChild(renderer.domElement);
-    // renderer.domElement.addEventListener('mousedown', onMouseDown, false);
+
     window.addEventListener('resize', onWindowResize, false);
   }
 

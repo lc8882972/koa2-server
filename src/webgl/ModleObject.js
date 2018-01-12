@@ -432,7 +432,7 @@ class ModelObject3D extends THREE.Object3D {
       console.error('BIM:ModelObject.addModel: The parameters must be THREE.Object3D classes');
       return;
     }
-
+  
     model.position.copy(this._obj.position);
     model.rotation.copy(this._obj.rotation);
     this.remove(this._obj);
